@@ -1,26 +1,33 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using movie.Models;
+using movie.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
+builder.Services.AddDbContext<MovieContext>(opt =>
+    opt.UseInMemoryDatabase("movies"));
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.MapType<DateOnly>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Format = DateOnlyConverter.Format,
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.MapControllers();
-
-var mov = new MovieModel(Guid.NewGuid(), "lol", new DateOnly(2001, 10, 10), 13, null, 4.1f, "");
-Console.WriteLine(mov);
 
 app.Run();
