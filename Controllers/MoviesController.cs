@@ -18,6 +18,15 @@ namespace movie.Controllers
         public MoviesController(MovieContext context)
         {
             _context = context;
+            _context.Add(new MovieModel(Guid.Empty, "Some film1", new DateOnly(2000, 10, 10), 13, "some film description", 4.6f, null));
+            _context.Add(new MovieModel(Guid.Empty, "Some film2", new DateOnly(2001, 10, 10), 0, "some film description", 4.9f, null));
+            _context.Add(new MovieModel(Guid.Empty, "Some film3", new DateOnly(2002, 10, 10), 16, "some film description", 3f, null));
+            _context.Add(new MovieModel(Guid.Empty, "Some film4", new DateOnly(2003, 10, 10), 18, "some film description", 4f, null));
+            _context.Add(new MovieModel(Guid.Empty, "Some film5", new DateOnly(2004, 10, 10), 21, "some film description", 4.1f, null));
+            _context.Add(new MovieModel(Guid.Empty, "Some film6", new DateOnly(2005, 10, 10), 13, "some film description", 2.5f, null));
+            _context.Add(new MovieModel(Guid.Empty, "Some film7", new DateOnly(2006, 10, 10), 16, "some film description", 4.1f, null));
+            _context.Add(new MovieModel(Guid.Empty, "Some film8", new DateOnly(2007, 10, 10), 0, "some film description", 1f, null));
+            _context.SaveChanges();
         }
 
         // GET: api/Movies
@@ -92,23 +101,12 @@ namespace movie.Controllers
             {
                 return Problem("Entity set 'MovieContext.MovieModels'  is null.");
             }
-            if(!IsValid(movieModel)){
-                return BadRequest("one of movie fields invalid");
-            }
             movieModel.ID = Guid.Empty;
             _context.MovieModels.Add(movieModel);
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetMovieModel", new { id = movieModel.ID }, movieModel);
         }
 
-        private bool IsValid(MovieModel movie)
-        {
-            return
-                movie.Name.Length >= 4 &&
-                movie.ReleaseDate < DateOnly.FromDateTime(DateTime.Now) &&
-                movie.MinAge >= 0 &&
-                movie.Rate >= 0;
-        }
         private bool MovieModelExists(Guid id)
         {
             return (_context.MovieModels?.Any(e => e.ID == id)).GetValueOrDefault();
